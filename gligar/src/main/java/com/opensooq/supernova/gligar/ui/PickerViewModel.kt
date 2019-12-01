@@ -110,7 +110,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         val imageItem =
             ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
-        mSelectedList[imageItem.imagePath] = imageItem
+        mSelectedList[imageItem.imagePath!!] = imageItem
         adapterItems?.add(1, imageItem)
         mNotifyInsert.value = 1
     }
@@ -133,7 +133,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
             }
             mCurrentSelection++
             imageItem.selected = mCurrentSelection
-            mSelectedList[imageItem.imagePath] = imageItem
+            mSelectedList[imageItem.imagePath!!] = imageItem
         } else {
             for ((i, mItem) in adapterImageItem.withIndex()) {
                 if (mItem.selected > imageItem.selected) {
@@ -160,7 +160,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         val sortedList = mSelectedList.values.sortedWith(compareByDescending { it.selected })
         val pathsList = mutableListOf<String>()
         for (imageItem in sortedList) {
-            pathsList.add(imageItem.imagePath)
+            pathsList.add(imageItem.imagePath!!)
         }
         return pathsList.toTypedArray()
     }
