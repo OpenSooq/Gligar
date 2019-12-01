@@ -7,7 +7,7 @@
     android:orientation="horizontal">
 
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/tvLabel"

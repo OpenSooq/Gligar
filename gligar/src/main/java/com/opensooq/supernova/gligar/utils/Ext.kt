@@ -42,9 +42,3 @@ internal fun createTempImageFile(context : Context): File {
     )
     return image
 }
-
-
-internal fun <T : View> Activity.bind(@IdRes res : Int) : T {
-    @Suppress("UNCHECKED_CAST")
-    return findViewById(res) as T
-}

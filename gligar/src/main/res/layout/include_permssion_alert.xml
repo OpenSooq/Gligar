@@ -33,12 +33,12 @@
         android:textColor="@color/permission_alert_color"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/alertBtn"
+        app:layout_constraintEnd_toStartOf="@id/alert_btn"
         app:layout_constraintStart_toEndOf="@id/iv_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/alertBtn"
+        android:id="@+id/alert_btn"
         android:textSize="12dp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"

@@ -36,7 +36,6 @@ import com.opensooq.supernova.gligar.adapters.ImagesAdapter
 import com.opensooq.supernova.gligar.adapters.ItemClickListener
 import com.opensooq.supernova.gligar.adapters.LoadMoreListener
 import com.opensooq.supernova.gligar.utils.PAGE_SIZE
-import com.opensooq.supernova.gligar.utils.bind
 import com.opensooq.supernova.gligar.utils.createTempImageFile
 import java.io.File
 
@@ -101,13 +100,13 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_picker)
 
-        icDone = bind(R.id.icDone)
-        alertBtn = bind(R.id.alertBtn)
-        alert = bind(R.id.alert)
-        albumsSpinner = bind(R.id.albumsSpinner)
-        rvImages = bind(R.id.rv_images)
-        changeAlbum = bind(R.id.changeAlbum)
-        rootView = bind(R.id.rootView)
+        icDone = findViewById(R.id.ic_done)
+        alertBtn = findViewById(R.id.alert_btn)
+        alert = findViewById(R.id.v_alert)
+        albumsSpinner = findViewById(R.id.albums_spinner)
+        rvImages = findViewById(R.id.rv_images)
+        changeAlbum = findViewById(R.id.change_album)
+        rootView = findViewById(R.id.v_rootView)
 
 
         mainViewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(
