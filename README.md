@@ -35,7 +35,7 @@ This library is available in **jCenter** which is the default Maven repository u
 ```groovy
 dependencies {
     // other dependencies here
-    implementation 'com.opensooq.supernova:Gligar:1.0'
+    implementation 'com.opensooq.supernova:gligar:1.2'
 }
 ```
 
