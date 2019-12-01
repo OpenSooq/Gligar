@@ -1,4 +1,4 @@
-package com.opensooq.supernova.gligar
+package com.opensooq.supernova.gligar.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -14,8 +14,7 @@ import java.lang.IllegalStateException
  */
 
 
-@JvmSuppressWildcards
-public class GligarPicker() {
+class GligarPicker {
 
     companion object {
         const val IMAGES_RESULT = "images"
