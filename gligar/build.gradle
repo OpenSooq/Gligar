@@ -5,12 +5,12 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 ext {
-    bintrayRepo = 'Gligar'
+    bintrayRepo = 'gligar'
     bintrayName = 'gligar'   // Has to be same as your library module name
 
     publishedGroupId = 'com.opensooq.supernova'
     libraryName = 'gligar'
-    artifact = 'Gligar'     // Has to be same as your library module name
+    artifact = 'gligar'     // Has to be same as your library module name
 
     libraryDescription = 'Image Picker for Android, Pick an image from Gallery or Capture a new image with Camera'
 
@@ -19,7 +19,7 @@ ext {
     gitUrl = 'https://github.com/OpenSooq/Gligar.git'
     githubRepository= 'OpenSooq/Gligar'
 
-    libraryVersion = '1.1'
+    libraryVersion = '1.2'
 
     developerId = 'OpenSooq'
     developerName = 'OpenSooq'
@@ -42,8 +42,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 2
-        versionName "1.1"
+        versionCode 1
+        versionName "1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
