@@ -11,8 +11,10 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
@@ -22,6 +24,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.opensooq.OpenSooq.ui.imagePicker.model.AlbumItem
 import com.opensooq.OpenSooq.ui.imagePicker.model.ImageItem
@@ -32,9 +36,8 @@ import com.opensooq.supernova.gligar.adapters.ImagesAdapter
 import com.opensooq.supernova.gligar.adapters.ItemClickListener
 import com.opensooq.supernova.gligar.adapters.LoadMoreListener
 import com.opensooq.supernova.gligar.utils.PAGE_SIZE
+import com.opensooq.supernova.gligar.utils.bind
 import com.opensooq.supernova.gligar.utils.createTempImageFile
-import kotlinx.android.synthetic.main.activity_image_picker.*
-import kotlinx.android.synthetic.main.include_permssion_alert.*
 import java.io.File
 
 
@@ -85,10 +88,28 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private var isSaveState = false
     private var forceCamera = false
 
+    private lateinit var icDone: ImageView
+    private lateinit var alertBtn: MaterialButton
+    private lateinit var alert: View
+    private lateinit var albumsSpinner: AppCompatSpinner
+    private lateinit var rvImages: RecyclerView
+    private lateinit var changeAlbum: View
+    private lateinit var rootView: View
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_picker)
+
+        icDone = bind(R.id.icDone)
+        alertBtn = bind(R.id.alertBtn)
+        alert = bind(R.id.alert)
+        albumsSpinner = bind(R.id.albumsSpinner)
+        rvImages = bind(R.id.rv_images)
+        changeAlbum = bind(R.id.changeAlbum)
+        rootView = bind(R.id.rootView)
+
+
         mainViewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(
             PickerViewModel::class.java
         )
@@ -221,12 +242,12 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private fun setImagesAdapter() {
         mImagesAdapter = ImagesAdapter(this)
         val mLayoutManager = GridLayoutManager(this, 3)
-        rv_images.layoutManager = mLayoutManager
-        rv_images.setHasFixedSize(true)
+        rvImages.layoutManager = mLayoutManager
+        rvImages.setHasFixedSize(true)
         mImagesAdapter?.images = arrayListOf()
         mImagesAdapter?.images?.addAll(if (isSaveState && !mainViewModel.saveStateImages.isNullOrEmpty()) mainViewModel.saveStateImages else mainViewModel.dumpImagesList)
         mainViewModel.saveStateImages.clear()
-        rv_images.adapter = mImagesAdapter
+        rvImages.adapter = mImagesAdapter
         observe()
         setLoadMoreListener()
     }
@@ -302,11 +323,11 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
 
     private fun setLoadMoreListener() {
         if (loadMoreListener != null) {
-            rv_images.removeOnScrollListener(loadMoreListener!!)
+            rvImages.removeOnScrollListener(loadMoreListener!!)
         }
-        loadMoreListener = LoadMoreListener(rv_images.layoutManager as GridLayoutManager)
+        loadMoreListener = LoadMoreListener(rvImages.layoutManager as GridLayoutManager)
         loadMoreListener?.setOnLoadMoreListener(this@ImagePickerActivity)
-        rv_images.addOnScrollListener(loadMoreListener!!)
+        rvImages.addOnScrollListener(loadMoreListener!!)
     }
 
     override fun onLoadMore() {
@@ -322,6 +343,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
             when (requestCode) {
                 REQUEST_CODE_CAMERA_IMAGE -> {
                     mainViewModel.addCameraItem(mImagesAdapter?.images)
+                    setDoneVisibilty(true)
                 }
             }
         }

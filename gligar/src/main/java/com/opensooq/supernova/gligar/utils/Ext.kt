@@ -1,5 +1,6 @@
 package com.opensooq.supernova.gligar.utils
 
+import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.os.Environment
@@ -7,6 +8,8 @@ import androidx.paging.PagedList
 import java.io.File
 import android.os.Environment.DIRECTORY_PICTURES
 import android.os.Environment.getExternalStoragePublicDirectory
+import android.view.View
+import androidx.annotation.IdRes
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,4 +41,10 @@ internal fun createTempImageFile(context : Context): File {
         storageDir
     )
     return image
+}
+
+
+internal fun <T : View> Activity.bind(@IdRes res : Int) : T {
+    @Suppress("UNCHECKED_CAST")
+    return findViewById(res) as T
 }
