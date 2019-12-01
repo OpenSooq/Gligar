@@ -18,7 +18,7 @@ Gliger [Android Image Picker Library]
 
 Demo
 ======================
-<img src="https://github.com/hani-momanii/Gifs/blob/master/demo.gif"  height="440" />
+<img src="https://github.com/OpenSooq/Gligar/blob/master/demo.gif"  height="440" />
 
 ## Table of content
 
