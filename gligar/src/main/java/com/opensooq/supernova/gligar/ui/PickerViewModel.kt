@@ -60,7 +60,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         mLimit = extras.getInt(EXTRA_LIMIT, 0)
         mCameraCisabled = extras.getBoolean(ImagePickerActivity.EXTRA_DISABLE_CAMERA, false)
-        mDirectCamera.value=extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT,false)
+        mDirectCamera.value = extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT, false)
     }
 
 
@@ -89,7 +89,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         viewModelScope.launch() {
             val images = getImages()
             if (!isLoadMore && !mCameraCisabled) {
-                images.add(0, ImageItem(source = ImageSource.CAMERA))
+                images.add(0, ImageItem("", ImageSource.CAMERA, 0))
             }
             mLastAddedImages.value = images
         }
@@ -110,7 +110,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         val imageItem =
             ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
-        mSelectedList[imageItem.imagePath!!] = imageItem
+        mSelectedList[imageItem.imagePath] = imageItem
         adapterItems?.add(1, imageItem)
         mNotifyInsert.value = 1
     }
@@ -133,7 +133,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
             }
             mCurrentSelection++
             imageItem.selected = mCurrentSelection
-            mSelectedList[imageItem.imagePath!!] = imageItem
+            mSelectedList[imageItem.imagePath] = imageItem
         } else {
             for ((i, mItem) in adapterImageItem.withIndex()) {
                 if (mItem.selected > imageItem.selected) {
@@ -160,14 +160,14 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         val sortedList = mSelectedList.values.sortedWith(compareByDescending { it.selected })
         val pathsList = mutableListOf<String>()
         for (imageItem in sortedList) {
-            pathsList.add(imageItem.imagePath!!)
+            pathsList.add(imageItem.imagePath)
         }
         return pathsList.toTypedArray()
     }
 
     private fun getDumItems(): ArrayList<ImageItem> {
         val list = arrayListOf<ImageItem>()
-        for (x in 0..PAGE_SIZE) list.add(ImageItem(source = ImageSource.DUM))
+        for (x in 0..PAGE_SIZE) list.add(ImageItem("", ImageSource.DUM, 0))
         return list
     }
 

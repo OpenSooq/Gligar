@@ -8,4 +8,4 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Parcelize
-internal data class ImageItem(var imagePath: String?="", var source: ImageSource?, var selected: Int = 0) : Parcelable
+internal data class ImageItem(var imagePath: String, var source: ImageSource, var selected: Int) : Parcelable
