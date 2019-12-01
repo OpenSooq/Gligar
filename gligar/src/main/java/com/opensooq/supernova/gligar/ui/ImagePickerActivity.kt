@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.opensooq.OpenSooq.ui.imagePicker.model.AlbumItem
 import com.opensooq.OpenSooq.ui.imagePicker.model.ImageItem
-import com.opensooq.supernova.gligar.ui.GligarPicker.Companion.IMAGES_RESULT
+import com.opensooq.supernova.gligar.GligarPicker.Companion.IMAGES_RESULT
 import com.opensooq.supernova.gligar.R
 import com.opensooq.supernova.gligar.adapters.AlbumsAdapter
 import com.opensooq.supernova.gligar.adapters.ImagesAdapter

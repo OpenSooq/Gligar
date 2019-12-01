@@ -1,4 +1,4 @@
-package com.opensooq.supernova.gligar.ui
+package com.opensooq.supernova.gligar
 
 import android.app.Activity
 import android.content.Intent
