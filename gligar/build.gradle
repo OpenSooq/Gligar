@@ -6,7 +6,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 ext {
     bintrayRepo = 'Gligar'
-    bintrayName = 'com.opensooq.supernova.gligar'   // Has to be same as your library module name
+    bintrayName = 'gligar'   // Has to be same as your library module name
 
     publishedGroupId = 'com.opensooq.supernova'
     libraryName = 'gligar'
@@ -19,7 +19,7 @@ ext {
     gitUrl = 'https://github.com/OpenSooq/Gligar.git'
     githubRepository= 'OpenSooq/Gligar'
 
-    libraryVersion = '1.0'
+    libraryVersion = '1.1'
 
     developerId = 'OpenSooq'
     developerName = 'OpenSooq'
@@ -42,8 +42,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
