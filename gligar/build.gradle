@@ -5,7 +5,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 ext {
-    bintrayRepo = 'gligar'
+    bintrayRepo = 'Gligar'
     bintrayName = 'gligar'   // Has to be same as your library module name
 
     publishedGroupId = 'com.opensooq.supernova'
