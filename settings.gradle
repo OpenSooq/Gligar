@@ -1,0 +1,2 @@
+include ':app', ':gligar'
+rootProject.name='Gligar Example'

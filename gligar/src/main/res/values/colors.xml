@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Main colors-->
+    <!--We extract shadow colors(whiteShadow) by subtract 5 from the original(white) color value in HSV format-->
+    <color name="counter_bg">#008577</color>
+    <color name="counter_color">#FFF</color>
+    <color name="selector_color">#000</color>
+    <color name="place_holder_color">#F0F0F0</color>
+    <color name="ripple_color">#dddddd</color>
+    <color name="transparent_selected">#80ebf5ff</color>
+    <color name="toolbar_bg">#008577</color>
+    <color name="background">#ffffff</color>
+    <color name="done">#ffffff</color>
+    <color name="change_album_color">#CAC9C9</color>
+    <color name="camera_icon_color">#000</color>
+    <color name="camera_text_color">#000</color>
+    <color name="album_arrow_color">#fff</color>
+    <color name="permission_alert_bg">#c62828</color>
+    <color name="permission_alert_color">#FFF</color>
+
+</resources>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="all_images">All images</string>
+    <string name="permission_storage_never_ask">The permission to access Files is not granted, please go to settings to grant it</string>
+    <string name="action_settings">Settings</string>
+    <string name="change_album_text">Change Album</string>
+    <string name="capture_new_image">Capture new image</string>
+    <string name="over_limit_msg">You have exceeded Images limit</string>
+
+</resources>
