@@ -4,7 +4,7 @@
 
 Gliger [Android Image Picker Library]
 ======================
-![API](https://img.shields.io/badge/API-17%2B-green.svg?style=flat) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+![API](https://img.shields.io/badge/API-17%2B-green.svg?style=flat) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)   [ ![Download](https://api.bintray.com/packages/opensooq/Gligar/gligar/images/download.svg?version=1.2) ](https://bintray.com/opensooq/Gligar/gligar/1.2/link)
 
 :star: Star us on GitHub — it helps!
 
@@ -35,7 +35,7 @@ This library is available in **jCenter** which is the default Maven repository u
 ```groovy
 dependencies {
     // other dependencies here
-    implementation 'com.opensooq.supernova:Gligar:1.0'
+    implementation 'com.opensooq.supernova:gligar:1.2'
 }
 ```
 
