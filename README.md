@@ -1,6 +1,3 @@
-# Gligar
-📸Image Picker for Android, Pick an image from Gallery or Capture a new image with Camera
-
 <a href="https://opensooq.com/">
     <img src="https://opensooqui2.os-cdn.com/os_web/desktop/opensooq-logo.svg" alt="OpenSooq logo" title="OpenSooq" align="right" height="70" />
 </a>
