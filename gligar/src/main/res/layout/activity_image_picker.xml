@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:id="@+id/v_rootView"
+    android:id="@+id/_v_rootView"
     android:layout_height="match_parent"
     android:background="@color/background">
 
@@ -22,11 +22,11 @@
             android:layout_height="?attr/actionBarSize">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/change_album"
+                android:id="@+id/_change_album"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                app:layout_constraintEnd_toStartOf="@id/ic_done"
+                app:layout_constraintEnd_toStartOf="@id/_ic_done"
                 android:paddingStart="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,7 @@
                 android:focusable="true">
 
                 <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/albums_spinner"
+                    android:id="@+id/_albums_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -43,19 +43,19 @@
 
 
                 <TextView
-                    android:id="@+id/tv_changeAlbum"
+                    android:id="@+id/_tv_changeAlbum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/change_album_text"
                     android:textColor="@color/change_album_color"
                     android:textSize="@dimen/change_album_size"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/albums_spinner" />
+                    app:layout_constraintTop_toBottomOf="@id/_albums_spinner" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
-                android:id="@+id/ic_done"
+                android:id="@+id/_ic_done"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -77,14 +77,14 @@
     </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_images"
+        android:id="@+id/_rv_images"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pickerToolbar" />
 
     <include
-        android:id="@+id/v_alert"
+        android:id="@+id/_v_alert"
         layout="@layout/include_permssion_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

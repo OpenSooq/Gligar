@@ -19,7 +19,7 @@ ext {
     gitUrl = 'https://github.com/OpenSooq/GligarPicker.git'
     githubRepository= 'OpenSooq/GligarPicker'
 
-    libraryVersion = '1.0.4'
+    libraryVersion = '1.0.5'
 
     developerId = 'OpenSooq'
     developerName = 'OpenSooq'

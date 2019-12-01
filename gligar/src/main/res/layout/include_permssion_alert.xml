@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ll_alertView"
+    android:id="@+id/_ll_alertView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/permission_alert_bg"
@@ -9,7 +9,7 @@
     android:padding="5dp">
 
     <ImageView
-        android:id="@+id/iv_icon"
+        android:id="@+id/_iv_icon"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_weight="8"
@@ -21,7 +21,7 @@
 
 
     <TextView
-        android:id="@+id/tv_message"
+        android:id="@+id/_tv_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
@@ -33,12 +33,12 @@
         android:textColor="@color/permission_alert_color"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/alert_btn"
-        app:layout_constraintStart_toEndOf="@id/iv_icon"
+        app:layout_constraintEnd_toStartOf="@id/_alert_btn"
+        app:layout_constraintStart_toEndOf="@id/_iv_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/alert_btn"
+        android:id="@+id/_alert_btn"
         android:textSize="12dp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"

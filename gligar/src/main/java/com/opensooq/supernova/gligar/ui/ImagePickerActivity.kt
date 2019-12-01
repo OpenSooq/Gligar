@@ -100,13 +100,13 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_picker)
 
-        icDone = findViewById(R.id.ic_done)
-        alertBtn = findViewById(R.id.alert_btn)
-        alert = findViewById(R.id.v_alert)
-        albumsSpinner = findViewById(R.id.albums_spinner)
-        rvImages = findViewById(R.id.rv_images)
-        changeAlbum = findViewById(R.id.change_album)
-        rootView = findViewById(R.id.v_rootView)
+        icDone = findViewById(R.id._ic_done)
+        alertBtn = findViewById(R.id._alert_btn)
+        alert = findViewById(R.id._v_alert)
+        albumsSpinner = findViewById(R.id._albums_spinner)
+        rvImages = findViewById(R.id._rv_images)
+        changeAlbum = findViewById(R.id._change_album)
+        rootView = findViewById(R.id._v_rootView)
 
 
         mainViewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(
