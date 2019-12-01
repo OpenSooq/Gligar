@@ -6,7 +6,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 ext {
     bintrayRepo = 'Gligar'
-    bintrayName = 'gligar'   // Has to be same as your library module name
+    bintrayName = 'com.opensooq.supernova.gligar'   // Has to be same as your library module name
 
     publishedGroupId = 'com.opensooq.supernova'
     libraryName = 'gligar'
