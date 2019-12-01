@@ -14,7 +14,8 @@ import java.lang.IllegalStateException
  */
 
 
-class GligarPicker() {
+@JvmSuppressWildcards
+public class GligarPicker() {
 
     companion object {
         const val IMAGES_RESULT = "images"
