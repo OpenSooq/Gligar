@@ -24,7 +24,7 @@ internal class ImagesAdapter(var clickListener: ItemClickListener) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder =
         ImageViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_picker_image,
+                R.layout.item_picker_image_gligar,
                 parent,
                 false
             )

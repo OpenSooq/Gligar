@@ -20,7 +20,7 @@ internal class AlbumsAdapter(var albumItems: List<AlbumItem>, context: Context) 
         var convertView = view
         val viewHolder: ViewHolderDrop
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_spinner, parent, false)
+            convertView = mInflater.inflate(R.layout.item_spinner_gligar, parent, false)
             viewHolder = ViewHolderDrop(convertView)
             convertView.tag = viewHolder
         } else {
@@ -37,7 +37,7 @@ internal class AlbumsAdapter(var albumItems: List<AlbumItem>, context: Context) 
         var convertView = view
         val viewHolder: ViewHolderView
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.layout_album_spinner, parent, false)
+            convertView = mInflater.inflate(R.layout.layout_album_spinner_gligar, parent, false)
             viewHolder = ViewHolderView(convertView)
             convertView.tag = viewHolder
         } else {

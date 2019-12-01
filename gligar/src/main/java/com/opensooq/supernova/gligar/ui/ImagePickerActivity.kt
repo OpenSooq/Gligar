@@ -98,7 +98,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image_picker)
+        setContentView(R.layout.activity_image_picker_gligar)
 
         icDone = findViewById(R.id._ic_done)
         alertBtn = findViewById(R.id._alert_btn)

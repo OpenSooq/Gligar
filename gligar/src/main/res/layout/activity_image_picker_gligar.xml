@@ -85,7 +85,7 @@
 
     <include
         android:id="@+id/_v_alert"
-        layout="@layout/include_permssion_alert"
+        layout="@layout/include_permssion_alert_gligar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
