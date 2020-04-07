@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -24,22 +25,21 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
     fun loadAlbums(): ArrayList<AlbumItem> {
         val albumCursor = contentResolver.query(
             cursorUri,
-            arrayOf(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME),
+            arrayOf(DISPLAY_NAME_COLUMN,MediaStore.Images.ImageColumns.BUCKET_ID),
             null,
             null,
             ORDER_BY
         )
         val list = arrayListOf<AlbumItem>()
         try {
-            list.add(AlbumItem("All", true))
+            list.add(AlbumItem("All", true,"0"))
             if (albumCursor == null) {
                 return list
             }
             albumCursor.doWhile {
-                val albumItem = AlbumItem(
-                    albumCursor.getString(albumCursor.getColumnIndex(DISPLAY_NAME_COLUMN)),
-                    false
-                )
+                val bucketId = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID))
+                val name = albumCursor.getString(albumCursor.getColumnIndex(DISPLAY_NAME_COLUMN)) ?: bucketId
+                var albumItem = AlbumItem(name, false, bucketId)
                 if (!list.contains(albumItem)) {
                     list.add(albumItem)
                 }
@@ -78,8 +78,8 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                         ID_COLUMN,
                         PATH_COLUMN
                     ),
-                    "${MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME} =?",
-                    arrayOf(albumItem.name),
+                    "${MediaStore.Images.ImageColumns.BUCKET_ID} =?",
+                    arrayOf(albumItem.bucketId),
                     "$ORDER_BY LIMIT $PAGE_SIZE OFFSET $offset"
                 )
             }
