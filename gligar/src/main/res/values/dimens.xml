@@ -5,4 +5,7 @@
     <dimen name="camera_icon_size">40dp</dimen>
     <dimen name="camera_text_size">14sp</dimen>
     <dimen name="card_elevation">0dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+
+
 </resources>
