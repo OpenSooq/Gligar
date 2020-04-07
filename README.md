@@ -55,12 +55,12 @@ To open the Picker:
 
 ### Kotlin
 ```kotlin
-Gligar().requestCode(PICKER_REQUEST_CODE).withActivity(this).show()
+GligarPicker().requestCode(PICKER_REQUEST_CODE).withActivity(this).show()
 ```
 ### Java
 
 ```java
-new Gligar().requestCode(PICKER_REQUEST_CODE).withActivity(this).show();
+new GligarPicker().requestCode(PICKER_REQUEST_CODE).withActivity(this).show();
 ```
 
 To get the result override onActivityResult method: 
@@ -75,7 +75,7 @@ To get the result override onActivityResult method:
 
         when (requestCode) {
             PICKER_REQUEST_CODE -> {
-                val imagesList = data?.extras?.getStringArray(Gligar.IMAGES_RESULT)// return list of selected images paths.
+                val imagesList = data?.extras?.getStringArray(GligarPicker.IMAGES_RESULT)// return list of selected images paths.
                 if (!imagesList.isNullOrEmpty()) {
                     imagesCount.text = "Number of selected Images: ${imagesList.size}"
                 }
@@ -95,7 +95,7 @@ To get the result override onActivityResult method:
         }
         switch (requestCode){
             case PICKER_REQUEST_CODE : {
-              String pathsList[]= data.getExtras().getStringArray(Gligar.IMAGES_RESULT); // return list of selected images paths.
+              String pathsList[]= data.getExtras().getStringArray(GligarPicker.IMAGES_RESULT); // return list of selected images paths.
                 imagesCount.text = "Number of selected Images: " + pathsList.length;
                 break;
             }   
