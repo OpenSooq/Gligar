@@ -55,6 +55,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     companion object {
         const val EXTRA_LIMIT = "limit"
         const val EXTRA_CAMERA_DIRECT = "camera_direct"
+        const val EXTRA_SINGLE_SELECTION = "single_selection"
         const val EXTRA_DISABLE_CAMERA = "disable_camera"
         const val STORAGE_PERMISSION_REQUEST_CODE = 100
         const val CAMERA_PERMISSION_REQUEST_CODE = 101
@@ -86,6 +87,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private var isPermissionGranted = false
     private var isSaveState = false
     private var forceCamera = false
+    private var isSingleSelection = false
 
     private lateinit var icDone: ImageView
     private lateinit var alertBtn: MaterialButton

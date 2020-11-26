@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_CAMERA_DIRECT
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_DISABLE_CAMERA
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_LIMIT
+import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SINGLE_SELECTION
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.startActivityForResult
 import java.lang.IllegalStateException
 
@@ -26,17 +27,19 @@ class GligarPicker {
     private var limit: Int = 10
     private var disableCamera: Boolean = false
     private var cameraDirect: Boolean = false
+    private var isSingleSelection: Boolean = false
 
 
     fun requestCode(requestCode: Int) = apply { this.requestCode = requestCode }
     fun limit(limit: Int) = apply { this.limit = limit }
     fun disableCamera(disableCamera: Boolean) = apply { this.disableCamera = disableCamera }
+    fun singleSelection(isSingleSelection: Boolean) = apply { this.isSingleSelection = isSingleSelection }
     fun cameraDirect(cameraDirect: Boolean) = apply { this.cameraDirect = cameraDirect }
     fun withActivity(activity: Activity) = apply { this.withActivity = activity }
     fun withFragment(fragment: Fragment) = apply { this.withFragment = fragment }
 
 
-    fun show() {
+    fun show(): Intent {
         if(withActivity == null && withFragment ==null){
             throw IllegalStateException("Activity or fragment should be passed, use withActivity(activity) or withFragment(fragment) to set any.")
         }
@@ -44,6 +47,7 @@ class GligarPicker {
         val intent = Intent()
         intent.putExtra(EXTRA_LIMIT, limit)
         intent.putExtra(EXTRA_CAMERA_DIRECT, cameraDirect)
+        intent.putExtra(EXTRA_SINGLE_SELECTION, isSingleSelection)
         if (!cameraDirect) {
             intent.putExtra(EXTRA_DISABLE_CAMERA, disableCamera)
         }
@@ -54,5 +58,6 @@ class GligarPicker {
             startActivityForResult(withFragment!!,requestCode,intent)
         }
 
+        return intent
     }
 }

@@ -15,6 +15,7 @@ import com.opensooq.supernova.gligar.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 /**
  * Created by Hani AlMomani on 24,September,2019
@@ -188,7 +189,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         savedStateHandle.set(SELECTED_ALBUM, mSelectedAlbum)
         savedStateHandle.set(SELECTED_IMAGES, mSelectedList)
         savedStateHandle.set(CURRENT_SELECTION, mCurrentSelection)
-        savedStateHandle.set(LIMIT, mLimit)
+        savedStateHandle.set(LIMIT_NUMBER, mLimit)
         savedStateHandle.set(DISABLE_CAMERA, mCameraCisabled)
 
     }
@@ -197,13 +198,32 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         saveStateImages = savedStateHandle.get(IMAGES) ?: arrayListOf()
         mAlbums.value = savedStateHandle.get(ALBUMS) ?: arrayListOf()
         mCurrentPhotoPath = savedStateHandle.get(PHOTO_PATH)
-        mCurrentSelectedAlbum = savedStateHandle.get(ALBUM_POS) ?: 0
-        mPage = savedStateHandle.get(PAGE) ?: 0
         mSelectedAlbum = savedStateHandle.get(SELECTED_ALBUM)
         mSelectedList = savedStateHandle.get(SELECTED_IMAGES) ?: hashMapOf()
-        mCurrentSelection = savedStateHandle.get(CURRENT_SELECTION) ?: 0
-        mLimit = savedStateHandle.get(LIMIT) ?: 0
         mCameraCisabled = savedStateHandle.get(DISABLE_CAMERA) ?: false
+        mPage = try {
+            savedStateHandle.get(PAGE) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mCurrentSelection = try {
+            savedStateHandle.get(CURRENT_SELECTION) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mLimit = try {
+            savedStateHandle.get(LIMIT_NUMBER) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mCurrentSelectedAlbum = try {
+            savedStateHandle.get(ALBUM_POS) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
     }
 
 }
