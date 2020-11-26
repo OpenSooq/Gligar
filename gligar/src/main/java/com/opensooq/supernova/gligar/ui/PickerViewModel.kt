@@ -15,7 +15,6 @@ import com.opensooq.supernova.gligar.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 /**
  * Created by Hani AlMomani on 24,September,2019
@@ -47,6 +46,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
     private var mSelectedList = hashMapOf<String, ImageItem>()
     private var mCurrentSelection: Int = 0
     private var mLimit = 0
+    private var isSingleSelectionEnabled = false
     private var mCameraCisabled: Boolean = true
 
     private lateinit var mImageDataSource: ImagesDataSource
@@ -62,6 +62,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         mLimit = extras.getInt(EXTRA_LIMIT, 0)
         mCameraCisabled = extras.getBoolean(ImagePickerActivity.EXTRA_DISABLE_CAMERA, false)
         mDirectCamera.value = extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT, false)
+        isSingleSelectionEnabled = extras.getBoolean(ImagePickerActivity.EXTRA_SINGLE_SELECTION, false)
     }
 
 
@@ -109,8 +110,15 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         if (mCurrentPhotoPath.isNullOrEmpty()) {
             return
         }
-        val imageItem =
-            ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
+        val imageItem = ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
+        if (isSingleSelectionEnabled) {
+            if (mSelectedList.size > 0) {
+                imageItem.selected = 0
+            } else {
+                imageItem.selected = 1
+            }
+        }
+
         mSelectedList[imageItem.imagePath] = imageItem
         adapterItems?.add(1, imageItem)
         mNotifyInsert.value = 1
@@ -118,6 +126,10 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
 
 
     internal fun setImageSelection(position: Int, adapterImageItem: ArrayList<ImageItem>?) {
+        if (isSingleSelectionEnabled) {
+            mSelectedList.clear()
+        }
+
         if (adapterImageItem.isNullOrEmpty()) {
             return
         }
@@ -132,7 +144,11 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
                 showOverLimit.value = true
                 return
             }
-            mCurrentSelection++
+            if (isSingleSelectionEnabled) {
+                mCurrentSelection = 1
+            } else {
+                mCurrentSelection++
+            }
             imageItem.selected = mCurrentSelection
             mSelectedList[imageItem.imagePath] = imageItem
         } else {
@@ -148,11 +164,25 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         mNotifyPosition.value = position
         mDoneEnabled.value = getCurrentSelection() > 0
+
+        if (isSingleSelectionEnabled) {
+            for ((i, mItem) in adapterImageItem.withIndex()) {
+                if (!mItem.imagePath.equals(imageItem.imagePath)) {
+                    if (mItem.selected > 0) {
+                        mItem.selected = 0
+                        mNotifyPosition.value = i
+                    }
+                }
+            }
+        }
     }
 
-
     private fun getCurrentSelectionCountForCamera(): Int {
-        mCurrentSelection++
+        if (isSingleSelectionEnabled) {
+            mCurrentSelection = 1
+        } else {
+            mCurrentSelection++
+        }
         return mCurrentSelection
     }
 

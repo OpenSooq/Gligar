@@ -17,7 +17,9 @@ class MainActivity : AppCompatActivity() {
 
         val startForResult = registerForActivityResult(object : GligarScreenResult() {
             override fun getGligarIntentLauncher(): Intent {
-                return GligarPicker().limit(10).disableCamera(false).cameraDirect(false).requestCode(PICKER_REQUEST_CODE)
+                return GligarPicker()
+                    .singleSelection(true)
+                    .disableCamera(false).cameraDirect(false).requestCode(PICKER_REQUEST_CODE)
                     .withActivity(this@MainActivity).show()
             }
         }) {

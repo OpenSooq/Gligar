@@ -84,7 +84,7 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                 )
             }
             photoCursor?.isAfterLast ?: return list
-            photoCursor.doWhile {
+            while(photoCursor.moveToNext()) {
                 val image = photoCursor.getString((photoCursor.getColumnIndex(PATH_COLUMN)))
                 list.add(ImageItem(image, ImageSource.GALLERY, 0))
             }

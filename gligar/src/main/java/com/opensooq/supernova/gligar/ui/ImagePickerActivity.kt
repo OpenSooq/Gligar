@@ -87,7 +87,6 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private var isPermissionGranted = false
     private var isSaveState = false
     private var forceCamera = false
-    private var isSingleSelection = false
 
     private lateinit var icDone: ImageView
     private lateinit var alertBtn: MaterialButton
