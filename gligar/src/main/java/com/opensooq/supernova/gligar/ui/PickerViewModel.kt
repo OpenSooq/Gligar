@@ -2,6 +2,7 @@ package com.opensooq.supernova.gligar.ui
 
 import android.content.ContentResolver
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -48,6 +49,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
     private var mLimit = 0
     private var isSingleSelectionEnabled = false
     private var mCameraCisabled: Boolean = true
+    private var supportedImages: String = ALL_TYPES
 
     private lateinit var mImageDataSource: ImagesDataSource
     private lateinit var contentResolver: ContentResolver
@@ -63,8 +65,8 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         mCameraCisabled = extras.getBoolean(ImagePickerActivity.EXTRA_DISABLE_CAMERA, false)
         mDirectCamera.value = extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT, false)
         isSingleSelectionEnabled = extras.getBoolean(ImagePickerActivity.EXTRA_SINGLE_SELECTION, false)
+        supportedImages = extras.getString(ImagePickerActivity.EXTRA_SUPPRTED_TYPES, ALL_TYPES)
     }
-
 
     internal fun loadAlbums() {
         if (!mAlbums.value.isNullOrEmpty()) {
@@ -98,7 +100,11 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
     }
 
     private suspend fun getImages() = withContext(Dispatchers.Default) {
-        mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage)
+        if (!TextUtils.equals(supportedImages, ALL_TYPES)) {
+            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages)
+        } else {
+            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage)
+        }
     }
 
 

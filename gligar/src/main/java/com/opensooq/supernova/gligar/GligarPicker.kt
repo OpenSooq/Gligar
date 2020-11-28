@@ -7,7 +7,9 @@ import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_CAME
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_DISABLE_CAMERA
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_LIMIT
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SINGLE_SELECTION
+import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SUPPRTED_TYPES
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.startActivityForResult
+import com.opensooq.supernova.gligar.utils.ALL_TYPES
 import java.lang.IllegalStateException
 
 /**
@@ -28,6 +30,7 @@ class GligarPicker {
     private var disableCamera: Boolean = false
     private var cameraDirect: Boolean = false
     private var isSingleSelection: Boolean = false
+    private var supportedExt: ArrayList<String> = arrayListOf()
 
 
     fun requestCode(requestCode: Int) = apply { this.requestCode = requestCode }
@@ -37,7 +40,20 @@ class GligarPicker {
     fun cameraDirect(cameraDirect: Boolean) = apply { this.cameraDirect = cameraDirect }
     fun withActivity(activity: Activity) = apply { this.withActivity = activity }
     fun withFragment(fragment: Fragment) = apply { this.withFragment = fragment }
+    fun supportExtensions(supportedExt: ArrayList<String>) = apply { this.supportedExt = supportedExt }
 
+    private fun getSupportedImagesExt(): String {
+        var result = ""
+        return if (this.supportedExt.isEmpty()) {
+            result = ALL_TYPES
+            result
+        } else {
+            this.supportedExt.forEach {
+                result += "$it/"
+            }
+            result
+        }
+    }
 
     fun show(): Intent {
         if(withActivity == null && withFragment ==null){
@@ -48,6 +64,7 @@ class GligarPicker {
         intent.putExtra(EXTRA_LIMIT, limit)
         intent.putExtra(EXTRA_CAMERA_DIRECT, cameraDirect)
         intent.putExtra(EXTRA_SINGLE_SELECTION, isSingleSelection)
+        intent.putExtra(EXTRA_SUPPRTED_TYPES, getSupportedImagesExt())
         if (!cameraDirect) {
             intent.putExtra(EXTRA_DISABLE_CAMERA, disableCamera)
         }

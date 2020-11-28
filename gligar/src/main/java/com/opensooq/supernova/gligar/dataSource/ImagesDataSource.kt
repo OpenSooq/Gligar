@@ -54,7 +54,8 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
 
     fun loadAlbumImages(
         albumItem: AlbumItem?,
-        page: Int
+        page: Int,
+        supportedImages: String? = null
     ): ArrayList<ImageItem> {
         val offset = page * PAGE_SIZE
         val list: ArrayList<ImageItem> = arrayListOf()
@@ -86,7 +87,14 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
             photoCursor?.isAfterLast ?: return list
             while(photoCursor.moveToNext()) {
                 val image = photoCursor.getString((photoCursor.getColumnIndex(PATH_COLUMN)))
-                list.add(ImageItem(image, ImageSource.GALLERY, 0))
+                if (supportedImages != null) {
+                    val imageType = image.substring(image.lastIndexOf(".") + 1)
+                    if (supportedImages.contains(imageType)) {
+                        list.add(ImageItem(image, ImageSource.GALLERY, 0))
+                    }
+                } else {
+                    list.add(ImageItem(image, ImageSource.GALLERY, 0))
+                }
             }
         } finally {
             if (photoCursor != null && !photoCursor.isClosed()) {

@@ -10,13 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainScreenLauncher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NormalActivityStarter" />
+        <activity android:name=".ActivityResultLauncher" />
+        <activity android:name=".SupportedFilesLauncher" />
     </application>
 
 </manifest>

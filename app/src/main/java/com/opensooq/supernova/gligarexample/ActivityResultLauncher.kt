@@ -1,6 +1,5 @@
 package com.opensooq.supernova.gligarexample
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +7,7 @@ import com.opensooq.supernova.gligar.GligarPicker
 import com.opensooq.supernova.gligar.ui.GligarScreenResult
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class ActivityResultLauncher : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +19,7 @@ class MainActivity : AppCompatActivity() {
                 return GligarPicker()
                     .singleSelection(true)
                     .disableCamera(false).cameraDirect(false).requestCode(PICKER_REQUEST_CODE)
-                    .withActivity(this@MainActivity).show()
+                    .withActivity(this@ActivityResultLauncher).show()
             }
         }) {
             if (!it.isNullOrEmpty()) {
