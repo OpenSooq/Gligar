@@ -35,9 +35,9 @@ internal class ImagesAdapter(var clickListener: ItemClickListener) :
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        holder.itemView.setOnClickListener { clickListener.onItemClicked(position) }
         val data = images[position]
 
+        holder.itemView.setOnClickListener { clickListener.onItemClicked(position, data.source) }
         if (data.source== ImageSource.GALLERY) {
             holder.imgView.visibility = View.VISIBLE
             holder.captureView.visibility = View.GONE

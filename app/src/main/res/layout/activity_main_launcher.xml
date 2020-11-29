@@ -44,6 +44,15 @@
             android:text="StartScreen PreSelected Images"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
+            android:id="@+id/custom_screen"
+            android:text="Custom Screen With Fragment"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

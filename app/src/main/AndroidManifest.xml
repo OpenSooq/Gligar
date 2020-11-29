@@ -21,6 +21,8 @@
         <activity android:name=".ActivityResultLauncher" />
         <activity android:name=".SupportedFilesLauncher" />
         <activity android:name=".ActivityStarterLauncherV2" />
+        <activity android:name=".CustomToolbarScreen"
+            android:theme="@style/CustomAppTheme"/>
     </application>
 
 </manifest>

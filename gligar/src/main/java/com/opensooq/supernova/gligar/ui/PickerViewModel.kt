@@ -98,6 +98,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         viewModelScope.launch() {
             val images = getImages()
             mCurrentSelection = mImageDataSource.selectedPosition
+            addSelectedImages(images)
             if (mCurrentSelection > 0) {
                 mDoneEnabled.postValue(true)
             }
@@ -105,6 +106,15 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
                 images.add(0, ImageItem("", ImageSource.CAMERA, ImageItem.NOT_SELECTED))
             }
             mLastAddedImages.value = images
+        }
+    }
+
+    private fun addSelectedImages(images: ArrayList<ImageItem>) {
+        if (preSelectedImages != null) {
+            mSelectedList.clear()
+            images.forEach {
+                mSelectedList[it.imagePath] = it
+            }
         }
     }
 

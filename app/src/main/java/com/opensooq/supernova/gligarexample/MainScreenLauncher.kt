@@ -26,5 +26,9 @@ class MainScreenLauncher : AppCompatActivity() {
         pre_selected_files_button?.setOnClickListener {
             startActivity(Intent(this@MainScreenLauncher, ActivityStarterLauncherV2::class.java))
         }
+
+        custom_screen?.setOnClickListener {
+            startActivity(Intent(this@MainScreenLauncher, CustomToolbarScreen::class.java))
+        }
     }
 }

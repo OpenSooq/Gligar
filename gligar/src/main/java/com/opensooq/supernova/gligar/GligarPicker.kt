@@ -2,10 +2,12 @@ package com.opensooq.supernova.gligar
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.opensooq.supernova.gligar.ui.GligarResultBuilder
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_CAMERA_DIRECT
+import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_CUSTOM_COLOR
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_DISABLE_CAMERA
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_LIMIT
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SINGLE_SELECTION
@@ -36,6 +38,7 @@ class GligarPicker {
     private var supportedExt: ArrayList<String> = arrayListOf()
     private var isPreSelectedItemsAttached: Boolean = false
     private var items: List<String>? = null
+    private var customBackgroundColor: String? = null
 
 
     fun requestCode(requestCode: Int) = apply { this.requestCode = requestCode }
@@ -46,9 +49,33 @@ class GligarPicker {
     fun withActivity(activity: Activity) = apply { this.withActivity = activity }
     fun withFragment(fragment: Fragment) = apply { this.withFragment = fragment }
     fun supportExtensions(supportedExt: ArrayList<String>) = apply { this.supportedExt = supportedExt }
-    fun isPreItemsSelected(items: List<String>?) {
+    fun isPreItemsSelected(items: List<String>?) = apply {
         this.isPreSelectedItemsAttached = true
         this.items = items
+    }
+
+    fun setCustomBackgroundColor(color: String) = apply {
+        this.customBackgroundColor = color
+    }
+
+    fun getBuildBundle(): Bundle {
+        val args = Bundle()
+        args.putInt(EXTRA_LIMIT, limit)
+        args.putBoolean(EXTRA_CAMERA_DIRECT, cameraDirect)
+        args.putBoolean(EXTRA_SINGLE_SELECTION, isSingleSelection)
+        args.putString(EXTRA_SUPPRTED_TYPES, getSupportedImagesExt(supportedExt))
+        args.putString(EXTRA_CUSTOM_COLOR, customBackgroundColor)
+        if (!cameraDirect) {
+            args.putBoolean(EXTRA_DISABLE_CAMERA, disableCamera)
+        }
+
+        if (isPreSelectedItemsAttached) {
+            items?.let {
+                args.putBoolean(ImagePickerActivity.EXTRA_PRE_SELECTED, isPreSelectedItemsAttached)
+                args.putStringArray(ImagePickerActivity.EXTRA_PRE_SELECTED_ITEMS, it.toTypedArray())
+            }
+        }
+        return args
     }
 
     fun show(): Intent {

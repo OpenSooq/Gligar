@@ -20,7 +20,7 @@ class ActivityStarterLauncherV2 : AppCompatActivity() {
                 this addRequestCode REQUEST_CODE
                 this disableCamera true
                 this isCustomExtSuported arrayListOf("png", "jpg", "jpeg")
-                this cameraDirect true
+                this cameraDirect false
                 this isSingleSelection false
                 this isPreItemsSelected input
                 return getFinalIntent()
