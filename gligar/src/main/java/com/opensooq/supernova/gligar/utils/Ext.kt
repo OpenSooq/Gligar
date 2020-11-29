@@ -29,6 +29,18 @@ internal fun Cursor.doWhile(action: () -> Unit) {
     }
 }
 
+internal fun getSupportedImagesExt(supportedExt: List<String>): String {
+    var result = ""
+    return if (supportedExt.isEmpty()) {
+        result = ALL_TYPES
+        result
+    } else {
+        supportedExt.forEach {
+            result += "$it/"
+        }
+        result
+    }
+}
 
 @Throws(IOException::class)
 internal fun createTempImageFile(context : Context): File {

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.opensooq.supernova.gligar.GligarPicker
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class NormalActivityStarter : AppCompatActivity() {
 
     val PICKER_REQUEST_CODE = 30
 

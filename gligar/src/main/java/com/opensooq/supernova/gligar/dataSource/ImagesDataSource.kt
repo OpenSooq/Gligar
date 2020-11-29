@@ -22,6 +22,9 @@ import kotlin.coroutines.CoroutineContext
 
 internal class ImagesDataSource(private val contentResolver: ContentResolver){
 
+    internal var selectedPosition = 0
+    internal var isSelected = false
+
     fun loadAlbums(): ArrayList<AlbumItem> {
         val albumCursor = contentResolver.query(
             cursorUri,
@@ -54,7 +57,9 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
 
     fun loadAlbumImages(
         albumItem: AlbumItem?,
-        page: Int
+        page: Int,
+        supportedImages: String? = null,
+        preSelectedImages: Array<out String?>? = null
     ): ArrayList<ImageItem> {
         val offset = page * PAGE_SIZE
         val list: ArrayList<ImageItem> = arrayListOf()
@@ -84,9 +89,24 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                 )
             }
             photoCursor?.isAfterLast ?: return list
-            photoCursor.doWhile {
+            while(photoCursor.moveToNext()) {
                 val image = photoCursor.getString((photoCursor.getColumnIndex(PATH_COLUMN)))
-                list.add(ImageItem(image, ImageSource.GALLERY, 0))
+                if (supportedImages != null) {
+                    val imageType = image.substring(image.lastIndexOf(".") + 1)
+                    if (supportedImages.contains(imageType)) {
+                        if (preSelectedImages == null) {
+                            list.add(ImageItem(image, ImageSource.GALLERY, ImageItem.NOT_SELECTED))
+                        } else {
+                            addSelectedImageToList(preSelectedImages, image, list)
+                        }
+                    }
+                } else {
+                    if (preSelectedImages == null) {
+                        list.add(ImageItem(image, ImageSource.GALLERY, ImageItem.NOT_SELECTED))
+                    } else {
+                        addSelectedImageToList(preSelectedImages, image, list)
+                    }
+                }
             }
         } finally {
             if (photoCursor != null && !photoCursor.isClosed()) {
@@ -95,4 +115,17 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
         }
         return list
     }
+
+    private fun addSelectedImageToList(preSelectedImages: Array<out String?>, image: String, list: ArrayList<ImageItem>) {
+        if (preSelectedImages.contains(image)) {
+            isSelected = true
+        }
+
+        if (isSelected) {
+            selectedPosition += 1
+        }
+        list.add(ImageItem(image, ImageSource.GALLERY, if (isSelected) ImageItem.SELECTED  else ImageItem.NOT_SELECTED, selectedPosition))
+        isSelected = false
+    }
+
 }
