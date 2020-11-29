@@ -3,6 +3,8 @@ package com.opensooq.supernova.gligar
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import com.opensooq.supernova.gligar.ui.GligarResultBuilder
+import com.opensooq.supernova.gligar.ui.ImagePickerActivity
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_CAMERA_DIRECT
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_DISABLE_CAMERA
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_LIMIT
@@ -10,6 +12,7 @@ import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SING
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.EXTRA_SUPPRTED_TYPES
 import com.opensooq.supernova.gligar.ui.ImagePickerActivity.Companion.startActivityForResult
 import com.opensooq.supernova.gligar.utils.ALL_TYPES
+import com.opensooq.supernova.gligar.utils.getSupportedImagesExt
 import java.lang.IllegalStateException
 
 /**
@@ -31,6 +34,8 @@ class GligarPicker {
     private var cameraDirect: Boolean = false
     private var isSingleSelection: Boolean = false
     private var supportedExt: ArrayList<String> = arrayListOf()
+    private var isPreSelectedItemsAttached: Boolean = false
+    private var items: List<String>? = null
 
 
     fun requestCode(requestCode: Int) = apply { this.requestCode = requestCode }
@@ -41,18 +46,9 @@ class GligarPicker {
     fun withActivity(activity: Activity) = apply { this.withActivity = activity }
     fun withFragment(fragment: Fragment) = apply { this.withFragment = fragment }
     fun supportExtensions(supportedExt: ArrayList<String>) = apply { this.supportedExt = supportedExt }
-
-    private fun getSupportedImagesExt(): String {
-        var result = ""
-        return if (this.supportedExt.isEmpty()) {
-            result = ALL_TYPES
-            result
-        } else {
-            this.supportedExt.forEach {
-                result += "$it/"
-            }
-            result
-        }
+    fun isPreItemsSelected(items: List<String>?) {
+        this.isPreSelectedItemsAttached = true
+        this.items = items
     }
 
     fun show(): Intent {
@@ -64,9 +60,16 @@ class GligarPicker {
         intent.putExtra(EXTRA_LIMIT, limit)
         intent.putExtra(EXTRA_CAMERA_DIRECT, cameraDirect)
         intent.putExtra(EXTRA_SINGLE_SELECTION, isSingleSelection)
-        intent.putExtra(EXTRA_SUPPRTED_TYPES, getSupportedImagesExt())
+        intent.putExtra(EXTRA_SUPPRTED_TYPES, getSupportedImagesExt(supportedExt))
         if (!cameraDirect) {
             intent.putExtra(EXTRA_DISABLE_CAMERA, disableCamera)
+        }
+
+        if (isPreSelectedItemsAttached) {
+            items?.let {
+                intent.putExtra(ImagePickerActivity.EXTRA_PRE_SELECTED, isPreSelectedItemsAttached)
+                intent.putExtra(ImagePickerActivity.EXTRA_PRE_SELECTED_ITEMS, it.toTypedArray())
+            }
         }
 
         if(withActivity!=null){

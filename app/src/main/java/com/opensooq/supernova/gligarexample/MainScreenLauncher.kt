@@ -22,5 +22,9 @@ class MainScreenLauncher : AppCompatActivity() {
         supported_files_button?.setOnClickListener {
             startActivity(Intent(this@MainScreenLauncher, SupportedFilesLauncher::class.java))
         }
+
+        pre_selected_files_button?.setOnClickListener {
+            startActivity(Intent(this@MainScreenLauncher, ActivityStarterLauncherV2::class.java))
+        }
     }
 }

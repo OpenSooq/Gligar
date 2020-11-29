@@ -57,6 +57,8 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
         const val EXTRA_CAMERA_DIRECT = "camera_direct"
         const val EXTRA_SINGLE_SELECTION = "single_selection"
         const val EXTRA_SUPPRTED_TYPES = "supported_types"
+        const val EXTRA_PRE_SELECTED = "pre_selected_key"
+        const val EXTRA_PRE_SELECTED_ITEMS = "pre_selected"
         const val EXTRA_DISABLE_CAMERA = "disable_camera"
         const val STORAGE_PERMISSION_REQUEST_CODE = 100
         const val CAMERA_PERMISSION_REQUEST_CODE = 101

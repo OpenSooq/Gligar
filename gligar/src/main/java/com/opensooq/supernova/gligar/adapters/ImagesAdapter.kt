@@ -55,6 +55,12 @@ internal class ImagesAdapter(var clickListener: ItemClickListener) :
             }
             Glide.with(holder.img).load(data.imagePath)
                 .transition(DrawableTransitionOptions().crossFade()).into(holder.img)
+
+            if (data.isCustomPositionActivated()) {
+                data.selectedPosition?.let {
+                    holder.selectionNum.text = it.toString()
+                }
+            }
             return
         }
         if (data.source== ImageSource.CAMERA) {

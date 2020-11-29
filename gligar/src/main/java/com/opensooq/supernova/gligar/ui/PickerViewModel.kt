@@ -50,9 +50,11 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
     private var isSingleSelectionEnabled = false
     private var mCameraCisabled: Boolean = true
     private var supportedImages: String = ALL_TYPES
+    private var preSelectedImages: Array<out String?>? = null
 
     private lateinit var mImageDataSource: ImagesDataSource
     private lateinit var contentResolver: ContentResolver
+
     private fun getCurrentSelection() = mCurrentSelection
 
     internal fun isOverLimit() = mCurrentSelection >= mLimit
@@ -66,6 +68,9 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         mDirectCamera.value = extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT, false)
         isSingleSelectionEnabled = extras.getBoolean(ImagePickerActivity.EXTRA_SINGLE_SELECTION, false)
         supportedImages = extras.getString(ImagePickerActivity.EXTRA_SUPPRTED_TYPES, ALL_TYPES)
+        if (extras.getBoolean(ImagePickerActivity.EXTRA_PRE_SELECTED, false)) {
+            this.preSelectedImages = extras.getStringArray(ImagePickerActivity.EXTRA_PRE_SELECTED_ITEMS)
+        }
     }
 
     internal fun loadAlbums() {
@@ -92,8 +97,12 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         viewModelScope.launch() {
             val images = getImages()
+            mCurrentSelection = mImageDataSource.selectedPosition
+            if (mCurrentSelection > 0) {
+                mDoneEnabled.postValue(true)
+            }
             if (!isLoadMore && !mCameraCisabled) {
-                images.add(0, ImageItem("", ImageSource.CAMERA, 0))
+                images.add(0, ImageItem("", ImageSource.CAMERA, ImageItem.NOT_SELECTED))
             }
             mLastAddedImages.value = images
         }
@@ -101,9 +110,9 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
 
     private suspend fun getImages() = withContext(Dispatchers.Default) {
         if (!TextUtils.equals(supportedImages, ALL_TYPES)) {
-            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages)
+            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages, preSelectedImages)
         } else {
-            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage)
+            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, null, preSelectedImages)
         }
     }
 
@@ -204,7 +213,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
 
     private fun getDumItems(): ArrayList<ImageItem> {
         val list = arrayListOf<ImageItem>()
-        for (x in 0..PAGE_SIZE) list.add(ImageItem("", ImageSource.DUM, 0))
+        for (x in 0..PAGE_SIZE) list.add(ImageItem("", ImageSource.DUM, ImageItem.NOT_SELECTED))
         return list
     }
 

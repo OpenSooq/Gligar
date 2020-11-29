@@ -35,6 +35,14 @@
             android:text="StartScreen With Supported Files"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:layout_marginTop="10dp"
+            android:id="@+id/pre_selected_files_button"
+            android:text="StartScreen PreSelected Images"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
