@@ -86,8 +86,6 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                 }
             }
         } catch (ex: Exception) {
-            print("III :: ${ex.message}")
-            ex.printStackTrace()
             return null
         }
     }
@@ -132,11 +130,8 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                     }
                 }
             }
-        } catch (ex: Exception) {
-            println("III :: ${ex.message}")
-            ex.printStackTrace()
         } finally {
-            if (photoCursor != null && !photoCursor.isClosed()) {
+            if (photoCursor != null && !photoCursor.isClosed) {
                 photoCursor.close()
             }
         }
