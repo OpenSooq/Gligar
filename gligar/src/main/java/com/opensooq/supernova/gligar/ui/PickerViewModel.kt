@@ -118,14 +118,15 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
     }
 
-    private suspend fun getImages() = withContext(Dispatchers.Default) {
-        if (!TextUtils.equals(supportedImages, ALL_TYPES)) {
-            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages, preSelectedImages)
-        } else {
-            mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, null, preSelectedImages)
+    private suspend fun getImages(): ArrayList<ImageItem> {
+        return withContext(Dispatchers.IO) {
+            if (!TextUtils.equals(supportedImages, ALL_TYPES)) {
+                mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages, preSelectedImages)
+            } else {
+                mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, null, preSelectedImages)
+            }
         }
     }
-
 
     private suspend fun getAlbums() = withContext(Dispatchers.Default) {
         mImageDataSource.loadAlbums()

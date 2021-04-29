@@ -2,7 +2,10 @@ package com.opensooq.supernova.gligar.dataSource
 
 import android.content.ContentResolver
 import android.database.Cursor
+import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.paging.PositionalDataSource
 import com.opensooq.OpenSooq.ui.imagePicker.model.AlbumItem
 import com.opensooq.OpenSooq.ui.imagePicker.model.ImageItem
@@ -55,40 +58,61 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
         return list
     }
 
+    private fun getCurserQuery(albumItem: AlbumItem?, offset: Int): Cursor? {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val queryBundle = Bundle().apply {
+                    putInt(ContentResolver.QUERY_ARG_LIMIT, PAGE_SIZE)
+                    putInt(ContentResolver.QUERY_ARG_OFFSET, offset)
+                    putString(ContentResolver.QUERY_ARG_SQL_SORT_ORDER, ORDER_BY)
+                }
+
+                if (!(albumItem == null || albumItem.isAll)) {
+                    queryBundle.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, "${MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME} =?")
+                    queryBundle.putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, arrayOf(albumItem.name))
+                }
+
+                return contentResolver.query(
+                    cursorUri,
+                    getSelectionProjection(),
+                    queryBundle,
+                    null
+                )
+            } else {
+                return if (albumItem == null || albumItem.isAll) {
+                    contentResolver.query(cursorUri, getSelectionProjection(), null, null, ORDER_BY + " LIMIT $PAGE_SIZE" + " OFFSET $offset")
+                } else {
+                    contentResolver.query(cursorUri, getSelectionProjection(), "${MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME} =?", arrayOf(albumItem.name), ORDER_BY + " LIMIT $PAGE_SIZE" + " OFFSET $offset")
+                }
+            }
+        } catch (ex: Exception) {
+            print("III :: ${ex.message}")
+            ex.printStackTrace()
+            return null
+        }
+    }
+
+    private fun getSelectionProjection(): Array<String> {
+        return arrayOf(ID_COLUMN, PATH_COLUMN)
+    }
+
     fun loadAlbumImages(
         albumItem: AlbumItem?,
         page: Int,
         supportedImages: String? = null,
         preSelectedImages: Array<out String?>? = null
     ): ArrayList<ImageItem> {
-        val offset = page * PAGE_SIZE
-        val list: ArrayList<ImageItem> = arrayListOf()
         var photoCursor: Cursor? = null
+        val list: ArrayList<ImageItem> = ArrayList()
         try {
-            if (albumItem == null || albumItem.isAll) {
-                photoCursor = contentResolver.query(
-                    cursorUri,
-                    arrayOf(
-                        ID_COLUMN,
-                        PATH_COLUMN
-                    ),
-                    null,
-                    null,
-                    "$ORDER_BY LIMIT $PAGE_SIZE OFFSET $offset"
-                )
-            } else {
-                photoCursor = contentResolver.query(
-                    cursorUri,
-                    arrayOf(
-                        ID_COLUMN,
-                        PATH_COLUMN
-                    ),
-                    "${MediaStore.Images.ImageColumns.BUCKET_ID} =?",
-                    arrayOf(albumItem.bucketId),
-                    "$ORDER_BY LIMIT $PAGE_SIZE OFFSET $offset"
-                )
+            val offset = page * PAGE_SIZE
+            photoCursor = getCurserQuery(albumItem, offset)
+
+            photoCursor?.isAfterLast
+            if (photoCursor == null) {
+                return list
             }
-            photoCursor?.isAfterLast ?: return list
+
             while(photoCursor.moveToNext()) {
                 val image = photoCursor.getString((photoCursor.getColumnIndex(PATH_COLUMN)))
                 if (supportedImages != null) {
@@ -108,6 +132,9 @@ internal class ImagesDataSource(private val contentResolver: ContentResolver){
                     }
                 }
             }
+        } catch (ex: Exception) {
+            println("III :: ${ex.message}")
+            ex.printStackTrace()
         } finally {
             if (photoCursor != null && !photoCursor.isClosed()) {
                 photoCursor.close()
