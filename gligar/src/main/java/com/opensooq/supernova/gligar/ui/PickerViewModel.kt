@@ -2,6 +2,7 @@ package com.opensooq.supernova.gligar.ui
 
 import android.content.ContentResolver
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -46,10 +47,14 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
     private var mSelectedList = hashMapOf<String, ImageItem>()
     private var mCurrentSelection: Int = 0
     private var mLimit = 0
+    private var isSingleSelectionEnabled = false
     private var mCameraCisabled: Boolean = true
+    private var supportedImages: String = ALL_TYPES
+    private var preSelectedImages: Array<out String?>? = null
 
     private lateinit var mImageDataSource: ImagesDataSource
     private lateinit var contentResolver: ContentResolver
+
     private fun getCurrentSelection() = mCurrentSelection
 
     internal fun isOverLimit() = mCurrentSelection >= mLimit
@@ -61,8 +66,12 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         mLimit = extras.getInt(EXTRA_LIMIT, 0)
         mCameraCisabled = extras.getBoolean(ImagePickerActivity.EXTRA_DISABLE_CAMERA, false)
         mDirectCamera.value = extras.getBoolean(ImagePickerActivity.EXTRA_CAMERA_DIRECT, false)
+        isSingleSelectionEnabled = extras.getBoolean(ImagePickerActivity.EXTRA_SINGLE_SELECTION, false)
+        supportedImages = extras.getString(ImagePickerActivity.EXTRA_SUPPRTED_TYPES, ALL_TYPES)
+        if (extras.getBoolean(ImagePickerActivity.EXTRA_PRE_SELECTED, false)) {
+            this.preSelectedImages = extras.getStringArray(ImagePickerActivity.EXTRA_PRE_SELECTED_ITEMS)
+        }
     }
-
 
     internal fun loadAlbums() {
         if (!mAlbums.value.isNullOrEmpty()) {
@@ -88,17 +97,36 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         viewModelScope.launch() {
             val images = getImages()
+            mCurrentSelection = mImageDataSource.selectedPosition
+            addSelectedImages(images)
+            if (mCurrentSelection > 0) {
+                mDoneEnabled.postValue(true)
+            }
             if (!isLoadMore && !mCameraCisabled) {
-                images.add(0, ImageItem("", ImageSource.CAMERA, 0))
+                images.add(0, ImageItem("", ImageSource.CAMERA, ImageItem.NOT_SELECTED))
             }
             mLastAddedImages.value = images
         }
     }
 
-    private suspend fun getImages() = withContext(Dispatchers.Default) {
-        mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage)
+    private fun addSelectedImages(images: ArrayList<ImageItem>) {
+        if (preSelectedImages != null) {
+            mSelectedList.clear()
+            images.forEach {
+                mSelectedList[it.imagePath] = it
+            }
+        }
     }
 
+    private suspend fun getImages(): ArrayList<ImageItem> {
+        return withContext(Dispatchers.IO) {
+            if (!TextUtils.equals(supportedImages, ALL_TYPES)) {
+                mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, supportedImages, preSelectedImages)
+            } else {
+                mImageDataSource.loadAlbumImages(mSelectedAlbum, mPage, null, preSelectedImages)
+            }
+        }
+    }
 
     private suspend fun getAlbums() = withContext(Dispatchers.Default) {
         mImageDataSource.loadAlbums()
@@ -108,8 +136,15 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         if (mCurrentPhotoPath.isNullOrEmpty()) {
             return
         }
-        val imageItem =
-            ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
+        val imageItem = ImageItem(mCurrentPhotoPath!!, ImageSource.GALLERY, getCurrentSelectionCountForCamera())
+        if (isSingleSelectionEnabled) {
+            if (mSelectedList.size > 0) {
+                imageItem.selected = 0
+            } else {
+                imageItem.selected = 1
+            }
+        }
+
         mSelectedList[imageItem.imagePath] = imageItem
         adapterItems?.add(1, imageItem)
         mNotifyInsert.value = 1
@@ -117,6 +152,10 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
 
 
     internal fun setImageSelection(position: Int, adapterImageItem: ArrayList<ImageItem>?) {
+        if (isSingleSelectionEnabled) {
+            mSelectedList.clear()
+        }
+
         if (adapterImageItem.isNullOrEmpty()) {
             return
         }
@@ -131,7 +170,11 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
                 showOverLimit.value = true
                 return
             }
-            mCurrentSelection++
+            if (isSingleSelectionEnabled) {
+                mCurrentSelection = 1
+            } else {
+                mCurrentSelection++
+            }
             imageItem.selected = mCurrentSelection
             mSelectedList[imageItem.imagePath] = imageItem
         } else {
@@ -147,11 +190,25 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         }
         mNotifyPosition.value = position
         mDoneEnabled.value = getCurrentSelection() > 0
+
+        if (isSingleSelectionEnabled) {
+            for ((i, mItem) in adapterImageItem.withIndex()) {
+                if (!mItem.imagePath.equals(imageItem.imagePath)) {
+                    if (mItem.selected > 0) {
+                        mItem.selected = 0
+                        mNotifyPosition.value = i
+                    }
+                }
+            }
+        }
     }
 
-
     private fun getCurrentSelectionCountForCamera(): Int {
-        mCurrentSelection++
+        if (isSingleSelectionEnabled) {
+            mCurrentSelection = 1
+        } else {
+            mCurrentSelection++
+        }
         return mCurrentSelection
     }
 
@@ -167,7 +224,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
 
     private fun getDumItems(): ArrayList<ImageItem> {
         val list = arrayListOf<ImageItem>()
-        for (x in 0..PAGE_SIZE) list.add(ImageItem("", ImageSource.DUM, 0))
+        for (x in 0..PAGE_SIZE) list.add(ImageItem("", ImageSource.DUM, ImageItem.NOT_SELECTED))
         return list
     }
 
@@ -188,7 +245,7 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         savedStateHandle.set(SELECTED_ALBUM, mSelectedAlbum)
         savedStateHandle.set(SELECTED_IMAGES, mSelectedList)
         savedStateHandle.set(CURRENT_SELECTION, mCurrentSelection)
-        savedStateHandle.set(LIMIT, mLimit)
+        savedStateHandle.set(LIMIT_NUMBER, mLimit)
         savedStateHandle.set(DISABLE_CAMERA, mCameraCisabled)
 
     }
@@ -197,13 +254,32 @@ internal class PickerViewModel(private val savedStateHandle: SavedStateHandle) :
         saveStateImages = savedStateHandle.get(IMAGES) ?: arrayListOf()
         mAlbums.value = savedStateHandle.get(ALBUMS) ?: arrayListOf()
         mCurrentPhotoPath = savedStateHandle.get(PHOTO_PATH)
-        mCurrentSelectedAlbum = savedStateHandle.get(ALBUM_POS) ?: 0
-        mPage = savedStateHandle.get(PAGE) ?: 0
         mSelectedAlbum = savedStateHandle.get(SELECTED_ALBUM)
         mSelectedList = savedStateHandle.get(SELECTED_IMAGES) ?: hashMapOf()
-        mCurrentSelection = savedStateHandle.get(CURRENT_SELECTION) ?: 0
-        mLimit = savedStateHandle.get(LIMIT) ?: 0
         mCameraCisabled = savedStateHandle.get(DISABLE_CAMERA) ?: false
+        mPage = try {
+            savedStateHandle.get(PAGE) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mCurrentSelection = try {
+            savedStateHandle.get(CURRENT_SELECTION) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mLimit = try {
+            savedStateHandle.get(LIMIT_NUMBER) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
+
+        mCurrentSelectedAlbum = try {
+            savedStateHandle.get(ALBUM_POS) ?: 0
+        } catch (ex: Exception) {
+            0
+        }
     }
 
 }

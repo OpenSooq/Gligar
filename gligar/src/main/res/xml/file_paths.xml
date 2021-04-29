@@ -47,6 +47,10 @@
         name="my_images"
         path="Android/data/com.companyname.yourproject/files/Pictures/" />
 
+    <external-path
+        name="my_images"
+        path="Android/data/com.companyname/files/Pictures" />
+
     <external-files-path
         name="images"
         path="Pictures" />
@@ -63,4 +67,5 @@
     <external-cache-path
         name="external_cache"
         path="." />
+
 </paths>

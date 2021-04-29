@@ -1,34 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
-
-ext {
-    bintrayRepo = 'Gligar'
-    bintrayName = 'gligar'   // Has to be same as your library module name
-
-    publishedGroupId = 'com.opensooq.supernova'
-    libraryName = 'gligar'
-    artifact = 'gligar'     // Has to be same as your library module name
-
-    libraryDescription = 'Image Picker for Android, Pick an image from Gallery or Capture a new image with Camera'
-
-    // Your github repo link
-    siteUrl = 'https://github.com/OpenSooq/GligarPicker'
-    gitUrl = 'https://github.com/OpenSooq/GligarPicker.git'
-    githubRepository= 'OpenSooq/GligarPicker'
-
-    libraryVersion = '1.1.0'
-
-    developerId = 'OpenSooq'
-    developerName = 'OpenSooq'
-    developerEmail = 'hani.momanii@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
+apply plugin: "com.jfrog.artifactory"
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 29
@@ -61,8 +35,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.activity:activity-ktx:1.2.0-beta01"
+    implementation "androidx.fragment:fragment-ktx:1.3.0-beta01"
+    implementation 'androidx.core:core-ktx:1.3.2'
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha04'
     implementation "androidx.lifecycle:lifecycle-runtime:2.1.0-alpha04"
@@ -73,15 +49,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0'
     implementation "android.arch.paging:runtime:1.0.1"
 
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.android.material:material:1.2.0-alpha02'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-}
-
-apply from: 'https://raw.githubusercontent.com/nisrulz/JCenter/master/installv1.gradle'
-apply from: 'https://gist.githubusercontent.com/tamtom/f54a538637178e4818bbc72f24a73e2d/raw/af6f8b6782475230cfff852ae11669c936e739a2/bintrayv1.gradle'
-tasks.withType(Javadoc).all {
-    enabled = false
 }

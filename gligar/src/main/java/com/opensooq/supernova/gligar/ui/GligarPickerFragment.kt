@@ -1,25 +1,29 @@
 package com.opensooq.supernova.gligar.ui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatSpinner
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.opensooq.OpenSooq.ui.imagePicker.model.AlbumItem
 import com.opensooq.OpenSooq.ui.imagePicker.model.ImageItem
 import com.opensooq.OpenSooq.ui.imagePicker.model.ImageSource
-import com.opensooq.supernova.gligar.GligarPicker.Companion.IMAGES_RESULT
+import com.opensooq.supernova.gligar.GligarPicker
 import com.opensooq.supernova.gligar.R
 import com.opensooq.supernova.gligar.adapters.AlbumsAdapter
 import com.opensooq.supernova.gligar.adapters.ImagesAdapter
@@ -38,52 +42,13 @@ import com.opensooq.supernova.gligar.adapters.ItemClickListener
 import com.opensooq.supernova.gligar.adapters.LoadMoreListener
 import com.opensooq.supernova.gligar.utils.PAGE_SIZE
 import com.opensooq.supernova.gligar.utils.createTempImageFile
+import kotlinx.android.synthetic.main.activity_image_picker_gligar.*
+import kotlinx.android.synthetic.main.include_permssion_alert_gligar.*
 import java.io.File
+import java.lang.IllegalArgumentException
 
+class GligarPickerFragment : Fragment(), LoadMoreListener.OnLoadMoreListener, ItemClickListener {
 
-/**
- * Created by Hani AlMomani on 24,September,2019
- */
-
-
-internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoadMoreListener,
-    ItemClickListener {
-
-    init {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-    }
-
-    companion object {
-        const val EXTRA_LIMIT = "limit"
-        const val EXTRA_CAMERA_DIRECT = "camera_direct"
-        const val EXTRA_SINGLE_SELECTION = "single_selection"
-        const val EXTRA_SUPPRTED_TYPES = "supported_types"
-        const val EXTRA_CUSTOM_COLOR = "custom_color"
-        const val EXTRA_PRE_SELECTED = "pre_selected_key"
-        const val EXTRA_PRE_SELECTED_ITEMS = "pre_selected"
-        const val EXTRA_DISABLE_CAMERA = "disable_camera"
-        const val STORAGE_PERMISSION_REQUEST_CODE = 100
-        const val CAMERA_PERMISSION_REQUEST_CODE = 101
-        const val REQUEST_CODE_CAMERA_IMAGE = 102
-
-        fun startActivityForResult(
-            fragment: Fragment,
-            requestCode: Int,
-            intent: Intent
-        ) {
-            intent.setClass(fragment.context!!, ImagePickerActivity::class.java)
-            fragment.startActivityForResult(intent, requestCode)
-        }
-
-        fun startActivityForResult(
-            activity: Activity,
-            requestCode: Int,
-            intent: Intent
-        ) {
-            intent.setClass(activity, ImagePickerActivity::class.java)
-            activity.startActivityForResult(intent, requestCode)
-        }
-    }
 
     private lateinit var mainViewModel: PickerViewModel
     private var mAlbumAdapter: AlbumsAdapter? = null
@@ -100,35 +65,103 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private lateinit var rvImages: RecyclerView
     private lateinit var changeAlbum: View
     private lateinit var rootView: View
+    private var listener: GligarPickerListener? = null
 
+    init {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image_picker_gligar)
+    companion object {
+        fun getInstance(picker: GligarPicker): GligarPickerFragment {
+            val fragment = GligarPickerFragment()
+            fragment.arguments = picker.getBuildBundle()
+            return fragment
+        }
+    }
 
-        icDone = findViewById(R.id._ic_done)
-        alertBtn = findViewById(R.id._alert_btn)
-        alert = findViewById(R.id._v_alert)
-        albumsSpinner = findViewById(R.id._albums_spinner)
-        rvImages = findViewById(R.id._rv_images)
-        changeAlbum = findViewById(R.id._change_album)
-        rootView = findViewById(R.id._v_rootView)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.activity_image_picker_gligar, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity?.let {
+            mainViewModel = ViewModelProvider(it, SavedStateViewModelFactory(it.application, this)).get(
+                PickerViewModel::class.java
+            )
 
-        mainViewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(
-            PickerViewModel::class.java
-        )
-        mainViewModel.init(contentResolver)
+            initFragmentOperations(savedInstanceState, it)
+        }
+    }
+
+    private fun initFragmentOperations(savedInstanceState: Bundle?, activity: FragmentActivity) {
+        icDone = _ic_done
+        alertBtn = _alert_btn
+        alert = _v_alert
+        albumsSpinner = _albums_spinner
+        rvImages = _rv_images
+        changeAlbum = _change_album
+        rootView = _v_rootView
+
+        mainViewModel.init(activity.contentResolver)
         if (savedInstanceState != null) {
             isSaveState = true
             mainViewModel.loadSaveState()
         } else {
-            mainViewModel.bindArguments(intent.extras)
-
+            arguments?.let {
+                it.getString(ImagePickerActivity.EXTRA_CUSTOM_COLOR, "")?.let {
+                   if (!TextUtils.isEmpty(it)) {
+                       try {
+                           pickerToolbar?.setBackgroundColor(Color.parseColor(it))
+                       } catch (ex: Exception) {
+                           println(ex.message)
+                           ex.printStackTrace()
+                       }
+                   }
+                }
+                mainViewModel.bindArguments(it)
+            }
         }
         setImagesAdapter()
         icDone.setOnClickListener { sendResults() }
     }
+
+
+    private fun checkCameraPermission() {
+        if (mainViewModel.isOverLimit()) {
+            showLimitMsg()
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkPermission(android.Manifest.permission.CAMERA)) {
+                cameraPermissionGranted()
+            } else {
+                requestPermission(
+                    arrayOf(android.Manifest.permission.CAMERA),
+                    ImagePickerActivity.CAMERA_PERMISSION_REQUEST_CODE
+                )
+            }
+        } else {
+            cameraPermissionGranted()
+        }
+    }
+
+    private fun checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                storagePermissionGranted()
+            } else {
+                requestPermission(
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    ImagePickerActivity.STORAGE_PERMISSION_REQUEST_CODE
+                );
+            }
+        } else {
+            storagePermissionGranted()
+        }
+    }
+
 
     private fun openCamera() = checkCameraPermission()
 
@@ -145,71 +178,51 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private fun cameraPermissionGranted() {
         hideAlert()
         try {
-            val photoFile: File? = createTempImageFile(this)
+            val photoFile: File? = createTempImageFile(requireActivity())
             mainViewModel.mCurrentPhotoPath = photoFile?.absolutePath
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val myPhotoFileUri = FileProvider.getUriForFile(
-                this,
-                this.applicationContext.packageName + ".provider",
-                photoFile!!
-            )
+            val myPhotoFileUri = activity?.let {
+                FileProvider.getUriForFile(it,
+                    activity?.applicationContext?.packageName + ".provider",
+                    photoFile!!
+                )
+            }
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, myPhotoFileUri)
             cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(
                 Intent.createChooser(cameraIntent, ""),
-                REQUEST_CODE_CAMERA_IMAGE
+                ImagePickerActivity.REQUEST_CODE_CAMERA_IMAGE
             )
         } catch (e: Exception) {
             Log.e("Picker", e.message, e)
         }
     }
 
-    private fun checkCameraPermission() {
-        if (mainViewModel.isOverLimit()) {
-            showLimitMsg()
-            return
-        }
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkPermission(android.Manifest.permission.CAMERA)) {
-                cameraPermissionGranted()
-            } else {
-                requestPermission(
-                    arrayOf(android.Manifest.permission.CAMERA),
-                    CAMERA_PERMISSION_REQUEST_CODE
-                )
-            }
-        } else {
-            cameraPermissionGranted()
-        }
-    }
-
-    private fun checkStoragePermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                storagePermissionGranted()
-            } else {
-                requestPermission(
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    STORAGE_PERMISSION_REQUEST_CODE
-                );
-            }
-        } else {
-            storagePermissionGranted()
-        }
-    }
-
     private fun checkPermission(permission: String): Boolean {
-        val result = ContextCompat.checkSelfPermission(this, permission)
+        val result = ContextCompat.checkSelfPermission(requireActivity(), permission)
         return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission(permissions: Array<String>, requestCode: Int) {
-        if (shouldShowRequestPermissionRationale(this, permissions[0])) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permissions[0])) {
             showAlert()
         } else {
-            requestPermissions(this, permissions, requestCode);
+            ActivityCompat.requestPermissions(requireActivity(), permissions, requestCode);
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            listener = context as GligarPickerListener
+        } catch (ex: Exception) {
+            throw IllegalArgumentException("Your Activity Should Implement GligarPickerListener")
+        }
+    }
+
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
     }
 
     private fun showAlert() {
@@ -222,7 +235,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     }
 
     private fun setAlbumsAdapter(albums: List<AlbumItem>) {
-        mAlbumAdapter = AlbumsAdapter(albums, applicationContext)
+        mAlbumAdapter = AlbumsAdapter(albums, requireActivity().applicationContext)
         albumsSpinner.adapter = mAlbumAdapter
         albumsSpinner.setSelection(mainViewModel.mCurrentSelectedAlbum, false)
         albumsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -246,7 +259,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
 
     private fun setImagesAdapter() {
         mImagesAdapter = ImagesAdapter(this)
-        val mLayoutManager = GridLayoutManager(this, 3)
+        val mLayoutManager = GridLayoutManager(requireActivity(), 3)
         rvImages.layoutManager = mLayoutManager
         rvImages.setHasFixedSize(true)
         mImagesAdapter?.images = arrayListOf()
@@ -267,28 +280,28 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
 
     private fun observe() {
 
-        mainViewModel.mDirectCamera.observe(this, Observer {
+        mainViewModel.mDirectCamera.observe(viewLifecycleOwner, Observer {
             forceCamera = it
         })
-        mainViewModel.mAlbums.observe(this, Observer {
+        mainViewModel.mAlbums.observe(viewLifecycleOwner, Observer {
             setAlbumsAdapter(it)
         })
-        mainViewModel.mLastAddedImages.observe(this, Observer {
+        mainViewModel.mLastAddedImages.observe(viewLifecycleOwner, Observer {
             addImages(it)
         })
-        mainViewModel.mNotifyPosition.observe(this, Observer {
+        mainViewModel.mNotifyPosition.observe(viewLifecycleOwner, Observer {
             mImagesAdapter?.notifyItemChanged(it)
         })
 
-        mainViewModel.mNotifyInsert.observe(this, Observer {
+        mainViewModel.mNotifyInsert.observe(viewLifecycleOwner, Observer {
             mImagesAdapter?.notifyDataSetChanged()
         })
 
-        mainViewModel.mDoneEnabled.observe(this, Observer {
+        mainViewModel.mDoneEnabled.observe(viewLifecycleOwner, Observer {
             setDoneVisibilty(it)
         })
 
-        mainViewModel.showOverLimit.observe(this, Observer {
+        mainViewModel.showOverLimit.observe(viewLifecycleOwner, Observer {
             showLimitMsg()
         })
     }
@@ -330,7 +343,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
             rvImages.removeOnScrollListener(loadMoreListener!!)
         }
         loadMoreListener = LoadMoreListener(rvImages.layoutManager as GridLayoutManager)
-        loadMoreListener?.setOnLoadMoreListener(this@ImagePickerActivity)
+        loadMoreListener?.setOnLoadMoreListener(this@GligarPickerFragment)
         rvImages.addOnScrollListener(loadMoreListener!!)
     }
 
@@ -345,7 +358,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                REQUEST_CODE_CAMERA_IMAGE -> {
+                ImagePickerActivity.REQUEST_CODE_CAMERA_IMAGE -> {
                     mainViewModel.addCameraItem(mImagesAdapter?.images)
                     setDoneVisibilty(true)
                 }
@@ -360,7 +373,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            STORAGE_PERMISSION_REQUEST_CODE -> {
+            ImagePickerActivity.STORAGE_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     storagePermissionGranted()
                 } else {
@@ -368,7 +381,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
                 }
                 return
             }
-            CAMERA_PERMISSION_REQUEST_CODE -> {
+            ImagePickerActivity.CAMERA_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     cameraPermissionGranted()
                 } else {
@@ -380,11 +393,8 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     }
 
     private fun sendResults() {
-        val images = mainViewModel.getSelectedPaths()
-        val intent = Intent()
-        intent.putExtra(IMAGES_RESULT, images)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
+        listener?.onImagesSelected(mainViewModel.getSelectedPaths())
+        activity?.onBackPressed()
     }
 
     private fun showLimitMsg() {
@@ -395,7 +405,7 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
     private fun showAppPage() {
         val intent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", packageName, null)
+            Uri.fromParts("package", requireActivity().packageName, null)
         )
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -413,5 +423,6 @@ internal class ImagePickerActivity : AppCompatActivity(), LoadMoreListener.OnLoa
         }
         super.onSaveInstanceState(outState)
     }
+
 
 }
