@@ -106,12 +106,12 @@ To get the result override onActivityResult method:
 
 | Method | usage |
 | ------ | ------ |
-| ``` withActivity(activity: Activity) ``` | used to set the activity will recive the result  |
-| ``` withFragment(fragment: Fragment) ``` | used to set the fragment will recive the result  |
+| ``` withActivity(activity: Activity) ``` | used to set the activity which will receive the result  |
+| ``` withFragment(fragment: Fragment) ``` | used to set the fragment which will receive the result  |
 | ``` requestCode(requestCode: Int) ``` | used to set the request code for the result  |
 | ``` limit(limit: Int) ``` | used to set the max number of images to select  |
-| ``` disableCamera(disableCamera: Boolean) ``` | by default the value of disableCamera is false, it determine to allow camera captures or not  |
-| ``` cameraDirect(cameraDirect: Boolean) ``` | by default the value of cameraDirect is false, it determine to open the camera before showing the picker or not |
+| ``` disableCamera(disableCamera: Boolean) ``` | by default the value of disableCamera is false, it determines whether to allow camera captures or not  |
+| ``` cameraDirect(cameraDirect: Boolean) ``` | by default the value of cameraDirect is false, it determines whether to open the camera before showing the picker or not |
 
 
 ## UI customization
